@@ -15,6 +15,11 @@ public:
     explicit PicturesFinder(QWidget *parent = 0);
     ~PicturesFinder();
 
+private slots:
+    void on_browseButton_clicked();
+
+    void on_startButton_clicked();
+
 private:
     Ui::PicturesFinder *ui;
 };
