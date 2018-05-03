@@ -33,7 +33,6 @@ void PicturesFinder::on_startButton_clicked()
         mb.exec();
     }
 
-    QDirIterator* dirIter = new QDirIterator(directoryName, QStringList() << "*.jpg" << "*.JPG", QDir::Files);
     QVBoxLayout* flowLayout = new QVBoxLayout;
     QWidget* scrollAreaContent = new QWidget;
     scrollAreaContent->setLayout( flowLayout );
@@ -42,6 +41,7 @@ void PicturesFinder::on_startButton_clicked()
     ui->scrollArea->setWidgetResizable( true );
     ui->scrollArea->setWidget( scrollAreaContent );
 
+    QDirIterator* dirIter = new QDirIterator(directoryName, QStringList() << "*.jpg" << "*.JPG", QDir::Files,QDirIterator::Subdirectories);
     while(dirIter->hasNext())
     {
         auto next = dirIter->next();
