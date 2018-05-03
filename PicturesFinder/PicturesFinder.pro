@@ -25,10 +25,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        picturesfinder.cpp
+        picturesfinder.cpp \
+    loadthread.cpp
 
 HEADERS += \
-        picturesfinder.h
+        picturesfinder.h \
+    loadthread.h
 
 FORMS += \
         picturesfinder.ui

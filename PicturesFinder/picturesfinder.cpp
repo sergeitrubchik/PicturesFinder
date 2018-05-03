@@ -3,6 +3,9 @@
 #include <QFileDialog>
 #include <QDirIterator>
 #include <QMessageBox>
+#include <QtGui>
+#include <QDebug>
+#include "loadthread.h"
 
 PicturesFinder::PicturesFinder(QWidget *parent) :
     QMainWindow(parent),
@@ -35,6 +38,23 @@ void PicturesFinder::on_startButton_clicked()
         return;
     }
 
+    // load images
+    QDirIterator* dirIter = new QDirIterator(directoryName, QStringList() << "*.jpg" << "*.JPG", QDir::Files,QDirIterator::Subdirectories);
+
+    QMutex* m = new QMutex();
+    QList<QPixmap *> pixmaps;
+    LoadThread* thread1 = new LoadThread(m, dirIter, pixmaps, "Thread1");
+    LoadThread* thread2 = new LoadThread(m, dirIter, pixmaps, "Thread2");
+
+    // TODO: how to prevent 'Not responding' problem ?
+    QThreadPool::globalInstance()->start(thread1);
+    QThreadPool::globalInstance()->start(thread2);
+
+    // TODO: is it just loop while(!thread.finished()) in case of threads ?
+    QThreadPool::globalInstance()->waitForDone();
+    qDebug() << "Loadind finished.";
+
+    // setup scrol area and layouts
     QVBoxLayout* layout = new QVBoxLayout;
     QWidget* scrollAreaContent = new QWidget;
     scrollAreaContent->setLayout(layout);
@@ -44,37 +64,20 @@ void PicturesFinder::on_startButton_clicked()
     ui->scrollArea->setWidgetResizable(true);
     ui->scrollArea->setWidget(scrollAreaContent);
 
-    QDirIterator* dirIter = new QDirIterator(directoryName, QStringList() << "*.jpg" << "*.JPG", QDir::Files,QDirIterator::Subdirectories);
-    // iterate over all '.jpg' files
-    while(dirIter->hasNext())
+    // TODO: is it possible to make it in parallel?
+    // probably we can do addind widgets in parallel
+    for(auto pixmap : pixmaps)
     {
-        // get full path to image
-        auto filename = dirIter->next();
-        if (!filename.isEmpty())
-        {
-            // try to load image
-            QImage image(filename);
-            if (!image.isNull())
-            {
-                // create pixmap
-                QPixmap pixmap = QPixmap::fromImage(image);
+        // create label and set pixmap
+        QLabel *imageLabel = new QLabel;
+        imageLabel->setPixmap(*pixmap);
+        imageLabel->setScaledContents(true);
+        imageLabel->setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum);
 
-                // create label and set pixmap
-                QLabel *imageLabel = new QLabel;
-                imageLabel->setPixmap(pixmap);
-                imageLabel->setScaledContents(true);
-                imageLabel->setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum);
+        // add this label widget to layout
+        layout->addWidget(imageLabel);
 
-                // add this label widget to layout
-                layout->addWidget(imageLabel);
-            }
-            //TODO: add logs window
-            //else
-            //{
-
-            //    QMessageBox::information(this, tr("PicturesFinder"),
-            //                             tr("Cannot load %1.").arg(filename));
-            //}
-        }
+        // TODO: good or bad ?
+        //QCoreApplication::processEvents();
     }
 }
