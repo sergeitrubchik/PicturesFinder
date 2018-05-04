@@ -46,7 +46,7 @@ void PicturesFinder::on_startButton_clicked()
     LoadThread* thread1 = new LoadThread(m, dirIter, pixmaps, "Thread1");
     LoadThread* thread2 = new LoadThread(m, dirIter, pixmaps, "Thread2");
 
-    // TODO: how to prevent 'Not responding' problem ?
+    // TODO: how to resolve 'Not responding' problem ?
     QThreadPool::globalInstance()->start(thread1);
     QThreadPool::globalInstance()->start(thread2);
 
@@ -65,7 +65,7 @@ void PicturesFinder::on_startButton_clicked()
     ui->scrollArea->setWidget(scrollAreaContent);
 
     // TODO: is it possible to make it in parallel?
-    // probably we can do addind widgets in parallel
+    // probably we can do adding widgets in parallel
     for(auto pixmap : pixmaps)
     {
         // create label and set pixmap

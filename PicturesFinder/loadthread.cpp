@@ -4,7 +4,7 @@
 #include <fstream>
 
 LoadThread::LoadThread(QMutex* mutex, QDirIterator* dirIter, QList<QPixmap*>& pixmaps, QString name)
-    :QRunnable(),
+    : QRunnable(),
       mutex_(mutex),
       dirIter_(dirIter),
       pixmaps_(pixmaps),
